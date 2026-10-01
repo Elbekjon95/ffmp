@@ -98,10 +98,10 @@ export const FamilyProvider = ({ children }) => {
   // Canvas Viewport transform state: { x, y, scale }
   const [transform, setTransform] = useState({ x: 100, y: 80, scale: 0.85 });
 
-  // Calculate layout coordinates with collapsed unions taken into account
+  // Calculate layout coordinates with collapsed unions and dynamic selection shift taken into account
   const layout = useMemo(() => {
-    return calculateTreeLayout(members, collapsedUnions, unionsData);
-  }, [members, collapsedUnions, unionsData]);
+    return calculateTreeLayout(members, collapsedUnions, unionsData, selectedMemberId);
+  }, [members, collapsedUnions, unionsData, selectedMemberId]);
 
   // Selected member object
   const selectedMember = useMemo(() => {
@@ -144,10 +144,19 @@ export const FamilyProvider = ({ children }) => {
     closeMarriageModal();
   }, [closeMarriageModal]);
 
-  // Open Detail / Select Member
+  // Open Detail / Profile Drawer
   const openDetail = useCallback((id) => {
     setSelectedMemberId(id);
     setPendingRelation(null);
+    setSidebarOpen(false);
+    setIsDetailDrawerOpen(true);
+  }, []);
+
+  // Open Quick Edit Sidebar
+  const openEditSidebar = useCallback((id) => {
+    setSelectedMemberId(id);
+    setPendingRelation(null);
+    setIsDetailDrawerOpen(false);
     setSidebarOpen(true);
   }, []);
 
@@ -257,7 +266,9 @@ export const FamilyProvider = ({ children }) => {
         spread: 60,
         origin: { y: 0.6 }
       });
-    } catch (e) {}
+    } catch {
+      // ignore confetti errors
+    }
   }, [closeAddEditModal, focusOnMember]);
 
   // Update Member Action
@@ -451,6 +462,7 @@ export const FamilyProvider = ({ children }) => {
     closeMarriageModal,
     updateUnionData,
     isDetailDrawerOpen,
+    setIsDetailDrawerOpen,
     isAddEditModalOpen,
     isStatsModalOpen,
     setIsStatsModalOpen,
@@ -467,6 +479,7 @@ export const FamilyProvider = ({ children }) => {
     setFilterStatus,
     stats,
     openDetail,
+    openEditSidebar,
     closeDetail,
     openAddModal,
     openEditModal,

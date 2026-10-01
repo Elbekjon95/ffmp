@@ -10,7 +10,6 @@ import {
   Upload, 
   Moon, 
   Sun, 
-  Filter, 
   RefreshCw, 
   FileDown, 
   Camera,
@@ -206,6 +205,19 @@ export const Navbar = () => {
           <option value="all">Barcha jins</option>
           <option value="male">Erkaklar</option>
           <option value="female">Ayollar</option>
+        </select>
+
+        {/* Life Status Filter */}
+        <select
+          className="form-select"
+          style={{ height: 38, padding: '0 10px', fontSize: '0.8rem', minWidth: 95 }}
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          title="Holati bo'yicha filtr (Hayot / Vafot etgan)"
+        >
+          <option value="all">Barcha holat</option>
+          <option value="alive">Hayot</option>
+          <option value="deceased">Vafot etgan</option>
         </select>
       </div>
 

@@ -4,13 +4,9 @@ import {
   X, 
   Edit3, 
   UserPlus, 
-  Heart, 
   Trash2, 
   Crosshair, 
   Calendar, 
-  MapPin, 
-  Briefcase, 
-  User, 
   Users,
   Award
 } from 'lucide-react';
@@ -68,8 +64,8 @@ export const MemberDetailDrawer = () => {
   };
 
   return (
-    <div className="drawer-overlay" onClick={closeDetail}>
-      <div className="drawer-content" onClick={e => e.stopPropagation()}>
+    <div className="drawer-overlay">
+      <div className="drawer-content">
         {/* Hero Section */}
         <div className="drawer-hero">
           <button className="drawer-close-btn" onClick={closeDetail} title="Yopish">
@@ -127,7 +123,10 @@ export const MemberDetailDrawer = () => {
             <button
               className="btn btn-secondary"
               style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-              onClick={() => openEditModal(m)}
+              onClick={() => {
+                closeDetail();
+                openEditModal(m);
+              }}
               title="Tahrirlash"
             >
               <Edit3 size={14} />

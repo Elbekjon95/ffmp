@@ -6,15 +6,7 @@ import {
   UserPlus, 
   Save, 
   Image, 
-  Upload, 
-  Trash2, 
-  Plus, 
-  Check, 
-  Users, 
-  Heart,
-  Calendar, 
-  MapPin, 
-  Briefcase 
+  Upload
 } from 'lucide-react';
 
 export const MemberModal = () => {

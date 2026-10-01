@@ -12,7 +12,8 @@ export const GhostNodes = () => {
     layout,
     members,
     setPendingRelation,
-    setSidebarOpen
+    setSidebarOpen,
+    setIsDetailDrawerOpen
   } = useFamily();
 
   if (!selectedMemberId) return null;
@@ -36,6 +37,7 @@ export const GhostNodes = () => {
 
   const handleGhostClick = (relationType, e) => {
     e.stopPropagation();
+    setIsDetailDrawerOpen(false);
     setPendingRelation({
       relativeId: node.id,
       relationType
@@ -56,18 +58,22 @@ export const GhostNodes = () => {
     y: node.y - 95
   };
 
-  // 2. Spouse position (Men on LEFT, Women on RIGHT)
+  // 2. Spouse position (Men on LEFT, Women on RIGHT of all adults)
+  const allAdultNodes = [node, ...existingSpouseNodes];
+  const minAdultX = Math.min(...allAdultNodes.map(a => a.x));
+  const maxAdultX = Math.max(...allAdultNodes.map(a => a.x + NODE_WIDTH));
+
   let spousePos;
   if (isFemale) {
     // Husband goes on the LEFT
     spousePos = {
-      x: node.x - GHOST_WIDTH - 50,
+      x: minAdultX - GHOST_WIDTH - 50,
       y: node.y + 35
     };
   } else {
     // Wife goes on the RIGHT
     spousePos = {
-      x: node.x + NODE_WIDTH + 50,
+      x: maxAdultX + 50,
       y: node.y + 35
     };
   }
@@ -133,7 +139,7 @@ export const GhostNodes = () => {
   }
 
   return (
-    <div className="ghost-nodes-container" style={{ position: 'absolute', top: 0, left: 0, zIndex: 22, pointerEvents: 'none' }}>
+    <div className="ghost-nodes-container" style={{ position: 'absolute', top: 0, left: 0, zIndex: 35, pointerEvents: 'none' }}>
       {/* 1. Ghost Father (Male - Left) */}
       {!hasFather && (
         <div
@@ -176,8 +182,8 @@ export const GhostNodes = () => {
         </div>
       )}
 
-      {/* 3. Ghost Spouse (Show only if person is unmarried!) */}
-      {existingSpouseNodes.length === 0 && (
+      {/* 3. Ghost Spouse (Er yoki Xotin qo'shish) */}
+      {existingSpouseNodes.length < 3 && (
         <div
           className={`ghost-card ${isFemale ? 'ghost-male' : 'ghost-female'}`}
           style={{

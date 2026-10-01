@@ -93,7 +93,7 @@ function markAllDescendantsAsVisited(memberId, memberMap, visitedSet) {
 /**
  * Main Layout Engine
  */
-export function calculateTreeLayout(members, collapsedUnions = new Set(), unionsData = {}) {
+export function calculateTreeLayout(members, collapsedUnions = new Set(), unionsData = {}, selectedMemberId = null) {
   if (!members || members.length === 0) {
     return {
       nodes: [],
@@ -164,9 +164,47 @@ export function calculateTreeLayout(members, collapsedUnions = new Set(), unions
       ? []
       : directChildrenList.filter(c => !visitedNodes.has(c.id));
 
-    // Layout children subtrees first
+    // Calculate ghost nodes expansion if this family contains selectedMemberId
+    const allAdultsTemp = [member, ...spouses];
+    const selectedAdult = selectedMemberId ? allAdultsTemp.find(a => a.id === selectedMemberId) : null;
+
+    let extraLeft = 0;
+    let extraRight = 0;
+
+    if (selectedAdult) {
+      // 1. Ghost Spouse (+ Add Wife / + Add Husband)
+      const canAddSpouse = (selectedAdult.spouses || []).length < 3;
+      if (canAddSpouse) {
+        if (selectedAdult.gender === 'female') {
+          extraLeft = Math.max(extraLeft, 250);
+        } else {
+          extraRight = Math.max(extraRight, 250);
+        }
+      }
+
+      // 2. Ghost Children (+ Add Son / + Add Daughter)
+      const hasChildren = allChildrenIds.size > 0;
+      if (!hasChildren) {
+        if (spouses.length === 0) {
+          extraLeft = Math.max(extraLeft, 70);
+          extraRight = Math.max(extraRight, 70);
+        }
+      } else {
+        extraLeft = Math.max(extraLeft, 240);
+        extraRight = Math.max(extraRight, 240);
+      }
+
+      // 3. Ghost Parents (+ Add Father / + Add Mother)
+      const parentIds = selectedAdult.parents || [];
+      if (parentIds.length < 2 && spouses.length === 0) {
+        extraLeft = Math.max(extraLeft, 70);
+        extraRight = Math.max(extraRight, 70);
+      }
+    }
+
+    // Layout children subtrees first (offset by extraLeft)
     let childrenWidth = 0;
-    let childrenStartX = startX;
+    let childrenStartX = startX + extraLeft;
     const childCenters = [];
 
     if (childrenToLayout.length > 0) {
@@ -175,18 +213,18 @@ export function calculateTreeLayout(members, collapsedUnions = new Set(), unions
         childCenters.push({ id: child.id, center: childRes.center, width: childRes.width });
         childrenStartX += childRes.width + (idx < childrenToLayout.length - 1 ? SIBLING_GAP : 0);
       });
-      childrenWidth = Math.max(0, childrenStartX - startX);
+      childrenWidth = Math.max(0, childrenStartX - (startX + extraLeft));
     }
 
     // Couple width
     const totalAdults = 1 + spouses.length;
     const coupleWidth = totalAdults * NODE_WIDTH + (totalAdults - 1) * SPOUSE_GAP;
 
-    const subtreeWidth = Math.max(coupleWidth, childrenWidth);
-    let coupleStartX = startX;
+    const rawContentWidth = Math.max(coupleWidth, childrenWidth);
+    let coupleStartX = startX + extraLeft;
 
     if (childrenWidth > coupleWidth) {
-      coupleStartX = startX + (childrenWidth - coupleWidth) / 2;
+      coupleStartX = startX + extraLeft + (childrenWidth - coupleWidth) / 2;
     } else if (childrenToLayout.length > 0 && coupleWidth > childrenWidth) {
       const shiftX = (coupleWidth - childrenWidth) / 2;
       childCenters.forEach(c => {
@@ -242,27 +280,30 @@ export function calculateTreeLayout(members, collapsedUnions = new Set(), unions
       });
     });
 
+    const subtreeWidth = rawContentWidth + extraLeft + extraRight;
     const coupleCenter = coupleStartX + coupleWidth / 2;
     return { width: subtreeWidth, center: coupleCenter };
   }
 
-  function shiftSubtree(nodeId, dx) {
+  function shiftSubtree(nodeId, dx, visited = new Set()) {
+    if (visited.has(nodeId)) return;
+    visited.add(nodeId);
     const node = nodePositions.get(nodeId);
     if (!node) return;
     node.x += dx;
 
     if (node.spouses) {
       node.spouses.forEach(sId => {
-        const sNode = nodePositions.get(sId);
-        if (sNode && !sNode.__shifted) {
-          sNode.x += dx;
-          sNode.__shifted = true;
+        if (!visited.has(sId)) {
+          visited.add(sId);
+          const sNode = nodePositions.get(sId);
+          if (sNode) sNode.x += dx;
         }
       });
     }
 
     if (node.children) {
-      node.children.forEach(cId => shiftSubtree(cId, dx));
+      node.children.forEach(cId => shiftSubtree(cId, dx, visited));
     }
   }
 
@@ -390,6 +431,14 @@ export function calculateTreeLayout(members, collapsedUnions = new Set(), unions
     minY = Math.min(minY, n.y);
     maxY = Math.max(maxY, n.y + NODE_HEIGHT);
   });
+
+  if (selectedMemberId && nodePositions.has(selectedMemberId)) {
+    const sel = nodePositions.get(selectedMemberId);
+    minX = Math.min(minX, sel.x - 260);
+    maxX = Math.max(maxX, sel.x + NODE_WIDTH + 260);
+    minY = Math.min(minY, sel.y - 120);
+    maxY = Math.max(maxY, sel.y + NODE_HEIGHT + 220);
+  }
 
   if (minX === Infinity) {
     minX = 0; maxX = 800; minY = 0; maxY = 600;

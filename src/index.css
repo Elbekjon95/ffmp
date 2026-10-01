@@ -776,25 +776,26 @@ body {
 /* Detail Drawer (Slide-over) */
 .drawer-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 90;
+  top: 64px;
+  right: 0;
+  width: auto;
+  height: calc(100vh - 64px);
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+  z-index: 85;
   display: flex;
   justify-content: flex-end;
-  animation: fade-in 0.2s ease-out;
 }
 
 .drawer-content {
-  width: 100%;
-  max-width: 420px;
+  pointer-events: auto;
+  width: 360px;
+  max-width: 90vw;
   height: 100%;
   background: var(--bg-secondary);
   border-left: 1px solid var(--border-medium);
-  box-shadow: var(--shadow-lg);
+  box-shadow: -4px 0 24px rgba(15, 23, 42, 0.12);
   display: flex;
   flex-direction: column;
   animation: slide-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -911,6 +912,14 @@ body {
   pointer-events: auto;
   user-select: none;
   z-index: 28;
+  transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), top 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.canvas-svg-layer line {
+  transition: x1 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              y1 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              x2 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              y2 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .marriage-date-pill {
@@ -1004,6 +1013,18 @@ body {
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
   user-select: none;
   box-sizing: border-box;
+  animation: ghost-pop-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ghost-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 [data-theme="dark"] .ghost-card {

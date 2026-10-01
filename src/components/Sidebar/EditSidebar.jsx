@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useFamily } from '../../context/FamilyContext';
 import { AVATAR_PRESETS, getDefaultAvatar } from '../../data/avatars';
-import { X, Upload, Trash2, Link2Off, Check, UserPlus, Save } from 'lucide-react';
+import { X, Upload, Trash2, Eye } from 'lucide-react';
 
 export const EditSidebar = () => {
   const {
     selectedMember,
-    selectedMemberId,
     pendingRelation,
     setPendingRelation,
     sidebarOpen,
@@ -14,6 +13,7 @@ export const EditSidebar = () => {
     addMember,
     updateMember,
     deleteMember,
+    openDetail,
     members
   } = useFamily();
 
@@ -59,7 +59,7 @@ export const EditSidebar = () => {
         firstName: selectedMember.firstName || '',
         lastName: selectedMember.lastName || '',
         gender: selectedMember.gender || 'male',
-        birthDate: selectedMember.birthDate ? selectedMember.birthDate.slice(0, 4) : '',
+        birthDate: selectedMember.birthDate || '',
         avatar: selectedMember.avatar || getDefaultAvatar(selectedMember.gender || 'male'),
         profession: selectedMember.profession || '',
         bio: selectedMember.bio || '',
@@ -324,6 +324,22 @@ export const EditSidebar = () => {
             Submit
           </button>
         </div>
+
+        {/* View Profile Button (when editing existing node) */}
+        {!isAdding && selectedMember && (
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ width: '100%', marginTop: 6 }}
+            onClick={() => {
+              setSidebarOpen(false);
+              openDetail(selectedMember.id);
+            }}
+          >
+            <Eye size={14} />
+            <span>To'liq profilni ko'rish</span>
+          </button>
+        )}
 
         {/* Delete button (when editing existing node) */}
         {!isAdding && selectedMember && (

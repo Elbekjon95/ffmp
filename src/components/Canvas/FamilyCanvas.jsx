@@ -9,7 +9,8 @@ export const FamilyCanvas = () => {
   const { layout, transform, setTransform, closeDetail } = useFamily();
   const wrapperRef = useRef(null);
   const isDraggingRef = useRef(false);
-  const dragStartRef = useRef({ x: 0, y: 0 });
+  const hasMovedRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0, clientX: 0, clientY: 0 });
   const [isPanning, setIsPanning] = useState(false);
 
   // Fit whole tree into viewport
@@ -37,32 +38,51 @@ export const FamilyCanvas = () => {
     });
   }, [layout.bounds, setTransform]);
 
+  const hasInitialFitRef = useRef(false);
+
   // Initial fit view on load
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fitView();
-    }, 150);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!hasInitialFitRef.current && layout.nodes.length > 0) {
+      hasInitialFitRef.current = true;
+      const timer = setTimeout(() => {
+        fitView();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [layout.nodes.length, fitView]);
 
   // Mouse pan handlers
   const handleMouseDown = (e) => {
     // Only pan if clicking on background or svg
-    if (e.target.closest('.member-node') || e.target.closest('.ghost-card') || e.target.closest('.canvas-controls') || e.target.closest('.canvas-legend')) {
+    if (
+      e.target.closest('.member-node') || 
+      e.target.closest('.ghost-card') || 
+      e.target.closest('.canvas-controls') || 
+      e.target.closest('.canvas-legend') ||
+      e.target.closest('.marriage-interactive-node')
+    ) {
       return;
     }
 
     isDraggingRef.current = true;
+    hasMovedRef.current = false;
     dragStartRef.current = {
       x: e.clientX - transform.x,
-      y: e.clientY - transform.y
+      y: e.clientY - transform.y,
+      clientX: e.clientX,
+      clientY: e.clientY
     };
     setIsPanning(true);
-    closeDetail();
   };
 
   const handleMouseMove = (e) => {
     if (!isDraggingRef.current) return;
+
+    const dx = Math.abs(e.clientX - dragStartRef.current.clientX);
+    const dy = Math.abs(e.clientY - dragStartRef.current.clientY);
+    if (dx > 5 || dy > 5) {
+      hasMovedRef.current = true;
+    }
 
     setTransform(prev => ({
       ...prev,
@@ -72,6 +92,10 @@ export const FamilyCanvas = () => {
   };
 
   const handleMouseUp = () => {
+    // Only close/deselect if user did a simple single click on empty background without panning/dragging
+    if (isDraggingRef.current && !hasMovedRef.current) {
+      closeDetail();
+    }
     isDraggingRef.current = false;
     setIsPanning(false);
   };

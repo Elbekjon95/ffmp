@@ -263,8 +263,8 @@ export const ConnectionLines = () => {
                 </>
               )}
 
-              {/* Side to Spouse (Only if unmarried) */}
-              {existingSpouses.length === 0 && (
+              {/* Side to Spouse */}
+              {existingSpouses.length < 3 && (
                 <line x1={spouseStartX} y1={spouseY} x2={spouseTargetX} y2={spouseY} stroke={spouseStroke} />
               )}
 

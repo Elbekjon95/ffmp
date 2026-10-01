@@ -6,8 +6,7 @@ import {
   RotateCcw, 
   Maximize2, 
   Minimize2,
-  Crosshair,
-  Info
+  Crosshair
 } from 'lucide-react';
 
 export const CanvasControls = ({ onFitView }) => {

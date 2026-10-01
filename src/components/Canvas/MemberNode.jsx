@@ -1,14 +1,12 @@
 import React from 'react';
 import { useFamily } from '../../context/FamilyContext';
 import { 
-  Heart, 
   UserPlus, 
   Edit3, 
-  Trash2, 
+  Eye,
   MapPin, 
   Briefcase, 
-  Calendar,
-  Sparkles
+  Calendar
 } from 'lucide-react';
 
 export const MemberNode = ({ node }) => {
@@ -16,9 +14,8 @@ export const MemberNode = ({ node }) => {
     selectedMemberId,
     highlightedMemberId,
     openDetail,
-    openEditModal,
+    openEditSidebar,
     openAddModal,
-    deleteMember,
     searchQuery,
     filterGen,
     filterGender,
@@ -52,12 +49,7 @@ export const MemberNode = ({ node }) => {
 
   const handleCardClick = (e) => {
     e.stopPropagation();
-    openDetail(node.id);
-  };
-
-  const handleAction = (e, actionCallback) => {
-    e.stopPropagation();
-    actionCallback();
+    openEditSidebar(node.id);
   };
 
   return (
@@ -122,6 +114,39 @@ export const MemberNode = ({ node }) => {
             <span>{node.birthPlace}</span>
           </div>
         )}
+      </div>
+
+      {/* Quick Action Buttons on Hover */}
+      <div className="node-actions" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          className="action-chip"
+          onClick={() => openDetail(node.id)}
+          title="Batafsil ma'lumotlar"
+        >
+          <Eye size={12} />
+          <span>Profil</span>
+        </button>
+
+        <button
+          type="button"
+          className="action-chip"
+          onClick={() => openEditSidebar(node.id)}
+          title="Tezkor tahrirlash"
+        >
+          <Edit3 size={12} />
+          <span>Tahrir</span>
+        </button>
+
+        <button
+          type="button"
+          className="action-chip"
+          onClick={() => openAddModal({ relativeId: node.id, relationType: 'child' })}
+          title="Farzand qo'shish"
+        >
+          <UserPlus size={12} />
+          <span>+ Bola</span>
+        </button>
       </div>
     </div>
   );

@@ -7,7 +7,6 @@ import {
   Layers, 
   Heart, 
   Briefcase, 
-  Sparkles, 
   ShieldCheck 
 } from 'lucide-react';
 
