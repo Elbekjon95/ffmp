@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useFamily } from '../context/FamilyContext';
+import { useAuth } from '../context/AuthContext';
 import { exportTreeAsImage } from '../utils/exportUtils';
 import { 
   TreePine, 
@@ -13,10 +14,16 @@ import {
   RefreshCw, 
   FileDown, 
   Camera,
-  ChevronDown
+  ChevronDown,
+  MessageSquare,
+  Shield,
+  LogOut,
+  User
 } from 'lucide-react';
 
-export const Navbar = () => {
+export const Navbar = ({ onOpenFeedback, onOpenAdmin }) => {
+  const { currentUser, logout, isAdmin, feedbacks } = useAuth();
+  const pendingCount = feedbacks.filter(f => f.status === 'pending').length;
   const {
     theme,
     toggleTheme,
@@ -351,6 +358,45 @@ export const Navbar = () => {
         >
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
+
+        {/* Feedback Button */}
+        <button
+          className="btn-icon navbar-feedback-btn"
+          onClick={onOpenFeedback}
+          title="Fikr qoldirish yoki murojaat"
+        >
+          <MessageSquare size={18} />
+        </button>
+
+        {/* Admin Panel (only for admin) */}
+        {isAdmin && (
+          <button
+            className="btn-icon navbar-admin-btn"
+            onClick={onOpenAdmin}
+            title="Admin panel"
+            style={{ position: 'relative' }}
+          >
+            <Shield size={18} />
+            {pendingCount > 0 && (
+              <span className="navbar-admin-badge">{pendingCount}</span>
+            )}
+          </button>
+        )}
+
+        {/* User Info + Logout */}
+        <div className="navbar-user-menu">
+          <div className="navbar-user-avatar">
+            {isAdmin ? <Shield size={14} /> : <User size={14} />}
+          </div>
+          <span className="navbar-user-name">{currentUser?.name}</span>
+          <button
+            className="btn-icon navbar-logout-btn"
+            onClick={logout}
+            title="Chiqish"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </div>
     </header>
   );
