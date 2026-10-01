@@ -43,7 +43,8 @@ export const Navbar = ({ onOpenFeedback, onOpenAdmin }) => {
     exportJSON,
     importJSON,
     resetToSingleRoot,
-    loadDemoSample
+    loadDemoSample,
+    dbStatus
   } = useFamily();
 
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
@@ -230,6 +231,39 @@ export const Navbar = ({ onOpenFeedback, onOpenAdmin }) => {
 
       {/* Right Action Buttons */}
       <div className="nav-actions">
+        {/* MongoDB Encryption Status Badge */}
+        <div
+          title="Barcha shaxsiy ma'lumotlar va rasmlar AES-256-GCM + ChaCha20-Poly1305 bilan 2-qavatli harbiy shifrlangan holda MongoDB da saqlanadi"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '4px 10px',
+            borderRadius: 20,
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            background: dbStatus === 'synced' ? 'rgba(16, 185, 129, 0.1)' : dbStatus === 'saving' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+            color: dbStatus === 'synced' ? '#10b981' : dbStatus === 'saving' ? '#f59e0b' : '#ef4444',
+            border: `1px solid ${dbStatus === 'synced' ? 'rgba(16, 185, 129, 0.25)' : dbStatus === 'saving' ? 'rgba(245, 158, 11, 0.25)' : 'rgba(239, 68, 68, 0.25)'}`,
+            cursor: 'default',
+            userSelect: 'none'
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              backgroundColor: dbStatus === 'synced' ? '#10b981' : dbStatus === 'saving' ? '#f59e0b' : '#ef4444',
+              boxShadow: dbStatus === 'synced' ? '0 0 6px #10b981' : 'none'
+            }}
+          />
+          {dbStatus === 'synced' && '🔒 MongoDB Shifrlangan'}
+          {dbStatus === 'saving' && '⚡ Shifrlanmoqda...'}
+          {dbStatus === 'connecting' && '🔄 Ulanmoqda...'}
+          {dbStatus === 'offline' && '⚠️ Oflayn rejim'}
+        </div>
+
         {/* Statistics Button */}
         <button
           className="btn btn-secondary"

@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { calculateTreeLayout } from '../utils/treeLayout';
 import confetti from 'canvas-confetti';
 import { INITIAL_FAMILY_DATA, SAMPLE_DEMO_FAMILY_DATA } from '../data/initialFamilyData';
+import { api } from '../utils/api';
 
 const FamilyContext = createContext(null);
 
@@ -62,10 +63,40 @@ export const FamilyProvider = ({ children }) => {
     return {};
   });
 
-  // Collapsed unions set (hidden descendants)
-  const [collapsedUnions, setCollapsedUnions] = useState(new Set());
+  // MongoDB Sinxronizatsiya holati
+  const [dbStatus, setDbStatus] = useState('connecting'); // 'connecting' | 'synced' | 'saving' | 'offline'
+  const isFirstLoad = useRef(true);
 
-  // Save to LocalStorage
+  // 1. MongoDB dan ma'lumotlarni yuklash (dastur ochilganda)
+  useEffect(() => {
+    let mounted = true;
+    const fetchTree = async () => {
+      try {
+        setDbStatus('connecting');
+        const res = await api.getMembers();
+        if (res && Array.isArray(res.members) && res.members.length > 0) {
+          if (mounted) {
+            setMembers(res.members);
+            if (res.unionsData) setUnionsData(res.unionsData);
+            setDbStatus('synced');
+          }
+        } else {
+          // Agar MongoDB hali bo'sh bo'lsa, joriy ma'lumotlarni bazaga shifrlab yuklash
+          await api.bulkSaveMembers(members, unionsData);
+          if (mounted) setDbStatus('synced');
+        }
+      } catch (err) {
+        console.warn('MongoDB ga ulanishda xato (lokal kesh ishlatilmoqda):', err.message);
+        if (mounted) setDbStatus('offline');
+      } finally {
+        if (mounted) isFirstLoad.current = false;
+      }
+    };
+    fetchTree();
+    return () => { mounted = false; };
+  }, []);
+
+  // 2. O'zgarishlarni LocalStorage va MongoDB ga real-time shifrlab saqlash
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
@@ -73,7 +104,25 @@ export const FamilyProvider = ({ children }) => {
     } catch (e) {
       console.error('Failed to save to storage', e);
     }
+
+    if (isFirstLoad.current) return;
+
+    setDbStatus('saving');
+    const timer = setTimeout(async () => {
+      try {
+        await api.bulkSaveMembers(members, unionsData);
+        setDbStatus('synced');
+      } catch (err) {
+        console.error('MongoDB ga saqlashda xatolik:', err);
+        setDbStatus('offline');
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
   }, [members, unionsData]);
+
+  // Collapsed unions set (hidden descendants)
+  const [collapsedUnions, setCollapsedUnions] = useState(new Set());
 
   // Modals & Drawers state
   const [selectedMemberId, setSelectedMemberId] = useState(null);
@@ -491,7 +540,8 @@ export const FamilyProvider = ({ children }) => {
     resetToSingleRoot,
     loadDemoSample,
     exportJSON,
-    importJSON
+    importJSON,
+    dbStatus
   };
 
   return (

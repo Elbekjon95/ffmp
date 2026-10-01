@@ -1,4 +1,8 @@
-﻿const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"
+    ? "/api"
+    : "http://localhost:5000/api");
 
 function getToken() {
   return localStorage.getItem("shajara_token");
@@ -32,7 +36,7 @@ export const api = {
   deleteUser: (id) =>
     request(`/auth/users/${id}`, { method: "DELETE" }),
 
-  // Members
+  // Members & Tree
   getMembers: () => request("/members"),
 
   createMember: (data) =>
@@ -44,8 +48,11 @@ export const api = {
   deleteMember: (id) =>
     request(`/members/${id}`, { method: "DELETE" }),
 
-  bulkSaveMembers: (members) =>
-    request("/members/bulk", { method: "POST", body: JSON.stringify({ members }) }),
+  bulkSaveMembers: (members, unionsData) =>
+    request("/members/bulk", { method: "POST", body: JSON.stringify({ members, unionsData }) }),
+
+  updateUnions: (unionsData) =>
+    request("/members/unions/update", { method: "PUT", body: JSON.stringify({ unionsData }) }),
 
   // Feedbacks
   sendFeedback: (data) =>
