@@ -23,6 +23,15 @@ export const ContactAdminModal = ({ onClose }) => {
     });
     const text = `${typeEmoji} <b>${typeLabel} (Login sahifasi)</b>\n\n\u{1F464} <b>Ismi:</b> ${name.trim()}\n\u{1F4C5} <b>Vaqt:</b> ${now}\n\n\u{1F4DD} <b>Xabar:</b>\n${message.trim()}`;
 
+        // API ga yuborish
+    try {
+      await fetch('http://localhost:5000/api/feedbacks/public', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, message: message.trim(), name: name.trim(), username: 'login_sahifasi', userId: 'anon' })
+      });
+    } catch {}
+    // Telegramga ham yuborish
     await sendToTelegram(text);
     setSending(false);
     setSent(true);

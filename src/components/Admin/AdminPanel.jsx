@@ -94,10 +94,10 @@ export const AdminPanel = ({ onClose }) => {
                         <Clock size={14} /> Kutilayotgan ({pendingFeedbacks.length})
                       </h3>
                       {pendingFeedbacks.map(fb => (
-                        <div key={fb.id} className="admin-fb-card pending">
+                        <div key={fb._id} className="admin-fb-card pending">
                           <div
                             className="admin-fb-header"
-                            onClick={() => setExpandedFb(expandedFb === fb.id ? null : fb.id)}
+                            onClick={() => setExpandedFb(expandedFb === fb._id ? null : fb._id)}
                           >
                             <div className="admin-fb-meta">
                               <span className={`admin-fb-type-badge ${fb.type}`}>
@@ -107,22 +107,22 @@ export const AdminPanel = ({ onClose }) => {
                               <span className="admin-fb-user">👤 {fb.name} ({fb.username})</span>
                               <span className="admin-fb-time">{formatDate(fb.createdAt)}</span>
                             </div>
-                            {expandedFb === fb.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            {expandedFb === fb._id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </div>
-                          {expandedFb === fb.id && (
+                          {expandedFb === fb._id && (
                             <div className="admin-fb-body">
                               <p className="admin-fb-message">{fb.message}</p>
                               <div className="admin-fb-actions">
                                 <button
                                   className="admin-fb-resolve-btn"
-                                  onClick={() => resolveFeedback(fb.id)}
+                                  onClick={() => resolveFeedback(fb._id)}
                                 >
                                   <CheckCircle size={14} />
                                   Tugatildi
                                 </button>
                                 <button
                                   className="admin-fb-delete-btn"
-                                  onClick={() => deleteFeedback(fb.id)}
+                                  onClick={() => deleteFeedback(fb._id)}
                                 >
                                   <Trash2 size={14} />
                                   O'chirish
@@ -141,10 +141,10 @@ export const AdminPanel = ({ onClose }) => {
                         <CheckCircle size={14} /> Tugatilgan ({resolvedFeedbacks.length})
                       </h3>
                       {resolvedFeedbacks.map(fb => (
-                        <div key={fb.id} className="admin-fb-card resolved">
+                        <div key={fb._id} className="admin-fb-card resolved">
                           <div
                             className="admin-fb-header"
-                            onClick={() => setExpandedFb(expandedFb === fb.id ? null : fb.id)}
+                            onClick={() => setExpandedFb(expandedFb === fb._id ? null : fb._id)}
                           >
                             <div className="admin-fb-meta">
                               <span className={`admin-fb-type-badge ${fb.type}`}>
@@ -154,15 +154,15 @@ export const AdminPanel = ({ onClose }) => {
                               <span className="admin-fb-user">👤 {fb.name} ({fb.username})</span>
                               <span className="admin-fb-time">{formatDate(fb.createdAt)}</span>
                             </div>
-                            {expandedFb === fb.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            {expandedFb === fb._id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </div>
-                          {expandedFb === fb.id && (
+                          {expandedFb === fb._id && (
                             <div className="admin-fb-body">
                               <p className="admin-fb-message">{fb.message}</p>
                               <div className="admin-fb-actions">
                                 <button
                                   className="admin-fb-delete-btn"
-                                  onClick={() => deleteFeedback(fb.id)}
+                                  onClick={() => deleteFeedback(fb._id)}
                                 >
                                   <Trash2 size={14} />
                                   O'chirish
@@ -260,7 +260,7 @@ export const AdminPanel = ({ onClose }) => {
                     <span className={`admin-user-role-badge ${user.role}`}>
                       {user.role === 'admin' ? 'Admin' : 'Foydalanuvchi'}
                     </span>
-                    {user.id !== currentUser.id && (
+                    {(user.id || user._id) !== (currentUser.id || currentUser._id) && (
                       <button
                         className="admin-user-delete-btn"
                         onClick={() => removeUser(user.id)}
