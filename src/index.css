@@ -2305,3 +2305,138 @@ body {
   position: relative;
   z-index: 9200;
 }
+
+/* Password Criteria and Strength Styles */
+.password-policy-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 8px;
+  grid-column: 1 / -1;
+}
+
+.password-strength-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+}
+
+.password-strength-label {
+  color: var(--text-muted);
+}
+
+.password-strength-value {
+  font-weight: 700;
+}
+
+.password-strength-track {
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.password-strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-criteria-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+}
+
+.password-criterion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.password-criterion.passed {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.password-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all var(--transition-fast);
+}
+
+.password-generate-btn:hover {
+  background: rgba(139, 92, 246, 0.18);
+  border-color: #8b5cf6;
+}
+
+/* Security Tab in Admin Panel */
+.admin-security-wrap {
+  padding: 4px 0;
+}
+
+.admin-security-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.admin-security-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.admin-security-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.admin-security-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 440px;
+}
+
+.admin-user-action-btn {
+  padding: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.admin-user-action-btn:hover {
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.08);
+}

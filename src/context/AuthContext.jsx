@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { api } from "../utils/api";
 
 const AuthContext = createContext(null);
@@ -120,6 +120,24 @@ export const AuthProvider = ({ children }) => {
     } catch {}
   }, []);
 
+  const changePassword = useCallback(async (currentPassword, newPassword) => {
+    try {
+      const res = await api.changePassword(currentPassword, newPassword);
+      return { success: true, message: res.message };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, []);
+
+  const resetUserPassword = useCallback(async (userId, newPassword) => {
+    try {
+      const res = await api.resetUserPassword(userId, newPassword);
+      return { success: true, message: res.message };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, []);
+
   return (
     <AuthContext.Provider value={{
       currentUser,
@@ -130,6 +148,8 @@ export const AuthProvider = ({ children }) => {
       logout,
       addUser,
       removeUser,
+      changePassword,
+      resetUserPassword,
       addFeedback,
       resolveFeedback,
       deleteFeedback,

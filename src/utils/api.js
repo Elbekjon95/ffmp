@@ -36,6 +36,18 @@ export const api = {
   deleteUser: (id) =>
     request(`/auth/users/${id}`, { method: "DELETE" }),
 
+  changePassword: (currentPassword, newPassword) =>
+    request("/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({ currentPassword, newPassword })
+    }),
+
+  resetUserPassword: (id, newPassword) =>
+    request(`/auth/users/${id}/password`, {
+      method: "PATCH",
+      body: JSON.stringify({ newPassword })
+    }),
+
   // Members & Tree
   getMembers: () => request("/members"),
 
