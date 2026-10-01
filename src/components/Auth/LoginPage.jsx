@@ -1,6 +1,7 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Lock, User, Eye, EyeOff, TreePine } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, TreePine, MessageCircle } from 'lucide-react';
+import { ContactAdminModal } from './ContactAdminModal';
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -10,6 +11,7 @@ export const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,10 +101,17 @@ export const LoginPage = () => {
           </button>
         </form>
 
-        <p className="login-footer">
-          Kirish uchun admin bilan bog'laning
-        </p>
+        <button
+          type="button"
+          className="login-contact-btn"
+          onClick={() => setShowContact(true)}
+        >
+          <MessageCircle size={14} />
+          Admin bilan bog'lanish
+        </button>
       </div>
+
+      {showContact && <ContactAdminModal onClose={() => setShowContact(false)} />}
     </div>
   );
 };

@@ -2272,3 +2272,36 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* Login contact button */
+.login-contact-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1.5px dashed rgba(139, 92, 246, 0.4);
+  border-radius: var(--radius-md);
+  color: #8b5cf6;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.login-contact-btn:hover {
+  background: rgba(139, 92, 246, 0.14);
+  border-color: rgba(139, 92, 246, 0.65);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.18);
+}
+
+/* Contact admin modal specific */
+.contact-admin-modal {
+  position: relative;
+  z-index: 9200;
+}
